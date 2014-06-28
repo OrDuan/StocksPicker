@@ -1,10 +1,7 @@
-import threading
 import urllib2
 import datetime
 from project import db
-from project.models.db_helper import save
 from project.models.history import History
-import timeit
 
 symbols = ["GOOG", "AAPL"]
 list_of_datas = {}
