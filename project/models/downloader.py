@@ -1,21 +1,24 @@
-import urllib
+import threading
+import urllib2
 import datetime
+from project import db
 from project.models.db_helper import save
 from project.models.history import History
 import timeit
 
 symbols = ["GOOG", "AAPL"]
-list_of_datas = []
+list_of_datas = {}
+
 
 def get_data():
     for symbol in symbols:
         url_string = "http://www.google.com/finance/getprices?q=" + symbol + "&i=86400&p=1Y&f=d,c,h,l,o,v"
-        list_of_datas.append(urllib.urlopen(url_string).readlines())
+        list_of_datas[symbol] = [urllib2.urlopen(url_string).readlines()]
         print "Downloaded list_of_datas for " + symbol
 
 
-def save_data():
-    for symbol, data in zip(symbols, list_of_datas):
+def save_data(symbol):
+    for data in list_of_datas[symbol]:
         for row in xrange(7, len(data)):
             if data[row].count(',') != 5:
                 continue
@@ -35,8 +38,11 @@ def save_data():
                         low=low,
                         close=close,
                         volume=volume.replace("\n", ""))
-            save(h)
+            db.add(h)
+
             print "Saved " + symbol + " Date: " + str(dt.day) + "/" + str(dt.month) + "/" + str(dt.year)
+        db.commit()
 
 get_data()
-save_data()
+for symbol in symbols:
+    save_data(symbol)
