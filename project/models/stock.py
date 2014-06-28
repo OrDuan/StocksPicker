@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from project import Base
+from project import Base, db
 
 __author__ = 'Or Duan'
 
@@ -24,3 +24,12 @@ class Stock(Base):
 
     def __repr__(self):
         return "< Stock: " + self.symbol + " >"
+
+    @staticmethod
+    def get_all_stocks():
+        return db.query(Stock).all()
+
+    @staticmethod
+    def get_all_stocks_symbols():
+        all_stocks = db.query(Stock.symbol).all()
+        return [x[0] for x in all_stocks]
