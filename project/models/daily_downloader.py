@@ -70,7 +70,7 @@ def save_data(symbol):
 
 def run_daily_downloader():
     time0 = time()
-    # Download last year data
+    # Download last day data
     t1 = threading.Thread(target=daily_looper, args=(0, 100))
     t2 = threading.Thread(target=daily_looper, args=(101, 200))
     t3 = threading.Thread(target=daily_looper, args=(201, 300))
@@ -90,5 +90,7 @@ def run_daily_downloader():
     # Save the data into the db
     for save_symbol in symbols:
         save_data(save_symbol)
+
+    print "DONE run_daily_downloader! Overall time:" + str(time() - time0)
 
 run_daily_downloader()
