@@ -8,7 +8,6 @@ __author__ = 'Or Duan'
 class Stock(Base):
     __tablename__ = 'stock'
 
-    id = Column(Integer)
     symbol = Column(String(10), primary_key=True)
     name = Column(String(150))
     category = Column(String(100))

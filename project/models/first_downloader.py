@@ -1,5 +1,3 @@
-import Queue
-import json
 import threading
 from time import sleep, time
 import urllib2

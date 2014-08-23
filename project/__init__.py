@@ -10,7 +10,6 @@ db = Session()
 
 Base = declarative_base()
 
-
 # Models
 import models.history
 import models.stock
