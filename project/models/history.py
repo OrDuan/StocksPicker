@@ -1,3 +1,4 @@
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import Column, ForeignKey, DateTime, Float, Integer, String
 from project import Base
 
@@ -27,3 +28,7 @@ class History(Base):
 
     def __repr__(self):
         return "< History: " + self.symbol + " Date: " + str(self.date) + " >"
+
+    @hybrid_property
+    def p(self):
+        return (self.high + self.low + self.close) / 3
