@@ -3,7 +3,7 @@ __author__ = 'Or Duan'
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-engine = create_engine('mysql://root:@localhost/StocksPicker')
+engine = create_engine('mysql://root:1234@localhost/StocksPicker')
 
 Session = sessionmaker(bind=engine)
 db = Session()

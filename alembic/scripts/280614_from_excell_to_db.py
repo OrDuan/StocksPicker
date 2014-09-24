@@ -15,4 +15,6 @@ for i in range(1, 501):
               category=data[3],
               location=data[5])
     db.add(s)
+    print 'Added {}'.format(data[1])
+print 'Done!'
 db.commit()

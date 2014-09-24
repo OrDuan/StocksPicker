@@ -55,7 +55,7 @@ def run_migrations_online():
 
     """
     alembic_config = config.get_section(config.config_ini_section)
-    alembic_config['sqlalchemy.url'] = 'mysql://root:@localhost/StocksPicker'
+    alembic_config['sqlalchemy.url'] = 'mysql://root:1234@localhost/StocksPicker'
     engine = engine_from_config(
         alembic_config,
         prefix='sqlalchemy.',
