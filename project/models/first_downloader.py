@@ -91,7 +91,7 @@ def first_looper(start, end):
 def run_first_downloader():
     time0 = time()
     # Download last year data
-    t1 = threading.Thread(target=first_looper, args=(0, 2))
+    t1 = threading.Thread(target=first_looper, args=(0, 10))
     # t2 = threading.Thread(target=first_looper, args=(101, 200))
     # t3 = threading.Thread(target=first_looper, args=(201, 300))
     # t4 = threading.Thread(target=first_looper, args=(301, 400))
