@@ -1,6 +1,7 @@
 import datetime
 from project import db
 from project.models.history import History
+from project.models.stock import Stock
 
 stock = [285.88, 290.59, 291.53, 292.33, 299.66, 307.55, 306.57, 306.87, 308.69, 304.11, 305.23, 303.48, 301.06,
          298.94, 303.4, 312.01, 306.1, 302.41, 301.22, 305.57, 304.21, 300.99, 300.75, 296.91, 295.74, 297.26, 296.69,
@@ -101,5 +102,32 @@ def find_behavior(symbol, weeks):
             del highlighted_dates[0]
 
 
+def find_resistance_line(symbol):
+    start_date = datetime.date(2016, 8, 26)
+    try:
+        stocks = db.query(History).filter(History.symbol == symbol, History.date < start_date).order_by(History.date.desc()).all()
+    except:
+        print 'error'
+        return
+    today_price = stocks[0].close
+    points = 0
+    print stocks[0].date, today_price
+    for i in xrange(1, 130):
+        # Check if we passed the resistance line
+        if stocks[i].close > today_price * 1.02:
+            points = 0
+            # print 'point reset - {}: {}, {}, {}'.format(stocks[i].date, stocks[i+5].close, stocks[i].close, stocks[i-5].close)
+            continue
+        # check if current close is +- % of the given close(today)
+        if today_price * 0.985 < stocks[i].close < today_price * 1.125:
+            #check if we have a parabola max
+            if stocks[i+5].close * 1.025 < stocks[i].close > stocks[i-5].close * 1.025:
+                # print 'point - {}: {}, {}, {}'.format(stocks[i].date, stocks[i+5].close, stocks[i].close, stocks[i-5].close)
+                # Add point, points given as long as the price didn't broke throe our line
+                points += 1
+                if points >= 2:
+                    print 'winner!!!!', stocks[i].symbol
 
-find_behavior("A", 30)
+# find_behavior("A", 30)
+for stock in Stock.get_all_stocks_symbols():
+    find_resistance_line(stock)

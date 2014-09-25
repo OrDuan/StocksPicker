@@ -9,7 +9,7 @@ t0 = time.time()
 import matplotlib
 matplotlib.rcParams.update({'font.size': 9})
 
-symbol = 'A'
+symbol = 'AMG'
 stocks = db.query(History.date, History.open, History.close, History.high, History.low, History.volume).filter_by(symbol=symbol).all()
 stocks_list = [list(tup) for tup in stocks]
 # stocks_list = [for x in stocks_list if stocks_list.index(x) == 1]

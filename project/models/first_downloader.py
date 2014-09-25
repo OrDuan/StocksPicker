@@ -73,16 +73,20 @@ def save_data(symbol):
                                           symbol=symbol, volume=volume)
 
                 db.add(h)
-
+                print 'added {}'.format(symbol)
             db.commit()
     except:
         print 'Failed to save the data to ' + symbol
 
 
 def first_looper(start, end):
+    global i_count
+    i_count = 1
     if end != 0:
         for symbol in symbols[start:end]:
+            print i_count
             first_downloader_get_data(symbol)
+            i_count += 1
     else:
         for symbol in symbols[start:]:
             first_downloader_get_data(symbol)
@@ -91,18 +95,18 @@ def first_looper(start, end):
 def run_first_downloader():
     time0 = time()
     # Download last year data
-    t1 = threading.Thread(target=first_looper, args=(0, 10))
-    # t2 = threading.Thread(target=first_looper, args=(101, 200))
+    t1 = threading.Thread(target=first_looper, args=(0, 50))
+    t2 = threading.Thread(target=first_looper, args=(51, 100))
     # t3 = threading.Thread(target=first_looper, args=(201, 300))
     # t4 = threading.Thread(target=first_looper, args=(301, 400))
-    # t5 = threading.Thread(target=first_looper, args=(401, 0))
+    # t5 = threading.Thread(target=first_looper, args=(401, 500))
     t1.start()
-    # t2.start()
+    t2.start()
     # t3.start()
     # t4.start()
     # t5.start()
     t1.join()
-    # t2.join()
+    t2.join()
     # t3.join()
     # t4.join()
     # t5.join()
