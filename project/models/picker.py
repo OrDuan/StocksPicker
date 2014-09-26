@@ -102,8 +102,18 @@ def find_behavior(symbol, weeks):
             del highlighted_dates[0]
 
 
-def find_resistance_line(symbol):
-    start_date = datetime.date(2016, 8, 26)
+def find_resistance_line(symbol, show_resets=False, include_history=False, start_date=datetime.date(2086, 8, 26)):
+    """
+    @symbol: Symbol of specific stock
+    @show_resets: While iterating the stock data we gives point every time the close price is close to the
+                  resistance line. When the close price goes over the line we reset the points. This option
+                  will determine if we want to print or not the resets.
+    @include_history: When reset occurs should we continue or stop iterate this stock. This good if we want
+                      to find resistance line older then the last break. Most of the time we will turn this
+                      off because the most important is the last resistance line.
+    @start_date: Date that the loop start from.
+    """
+
     try:
         stocks = db.query(History).filter(History.symbol == symbol, History.date < start_date).order_by(History.date.desc()).all()
     except:
@@ -111,13 +121,17 @@ def find_resistance_line(symbol):
         return
     today_price = stocks[0].close
     points = 0
-    print stocks[0].date, today_price
-    for i in xrange(1, 130):
+    # print stocks[0].date, today_price
+    for i in xrange(5, 150):
         # Check if we passed the resistance line
-        if stocks[i].close > today_price * 1.02:
+        if stocks[i].close > today_price * 1.025:
+            if show_resets:
+                print 'point reset for {} - {}: {}, {}, {}'.format(stocks[i].symbol, stocks[i].date.strftime("%d/%m/%y"), stocks[i+5].close, stocks[i].close, stocks[i-5].close)
             points = 0
-            # print 'point reset - {}: {}, {}, {}'.format(stocks[i].date, stocks[i+5].close, stocks[i].close, stocks[i-5].close)
-            continue
+            if include_history:
+                return
+            else:
+                continue
         # check if current close is +- % of the given close(today)
         if today_price * 0.985 < stocks[i].close < today_price * 1.125:
             #check if we have a parabola max
@@ -126,8 +140,8 @@ def find_resistance_line(symbol):
                 # Add point, points given as long as the price didn't broke throe our line
                 points += 1
                 if points >= 2:
-                    print 'winner!!!!', stocks[i].symbol
+                    print 'Found: {}'.format(stocks[i].symbol)
 
 # find_behavior("A", 30)
 for stock in Stock.get_all_stocks_symbols():
-    find_resistance_line(stock)
+    find_resistance_line(stock, show_resets=False, include_history=False)
