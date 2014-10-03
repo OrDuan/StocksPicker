@@ -1,4 +1,5 @@
 import threading
+import pickle
 from time import sleep, time
 import urllib2
 import datetime
@@ -9,16 +10,17 @@ from project.models.stock import Stock
 
 symbols = Stock.get_all_stocks_symbols()
 dict_of_temp_stocks = {}
-
+NEW_STOCKS = False
 
 def first_downloader_get_data(symbol):
     """
     Gets a stock's symbol and append the data to the dict_of_temp_stocks
     """
     try:
-        url_string = 'http://www.google.com/finance/getprices?q=' + symbol + '&i=86400&p=1Y&f=d,c,h,l,o,v'
-        dict_of_temp_stocks[symbol] = [urllib2.urlopen(url_string).readlines()]
-        print 'Downloaded list_of_datas for ' + symbol
+        if NEW_STOCKS:
+            url_string = 'http://www.google.com/finance/getprices?q=' + symbol + '&i=86400&p=1Y&f=d,c,h,l,o,v'
+            dict_of_temp_stocks[symbol] = [urllib2.urlopen(url_string).readlines()]
+            print 'Downloaded list_of_datas for ' + symbol
     except:
         print '@@@@@@@@Failed to download data for ' + symbol + '@@@@@@@@'
         print 'Trying again in 5 secs...'
@@ -37,7 +39,7 @@ def create_history_object(**kwargs):
     # Lets check if we already have that day's data
     have_data = True if (stock.dt,) in all_stock_dates else False
     if have_data:
-        print 'Already have the data for this date! Updated!'
+        print 'Already have the data for this date! Updating!'
         # continue
         h = db.query(History).filter_by(date=stock.dt).first()
         h.__dict__ = History(kwargs).__dict__.copy()
@@ -93,6 +95,7 @@ def first_looper(start, end):
 
 
 def run_first_downloader():
+    global dict_of_temp_stocks
     time0 = time()
     # Download last year data
     threads = {}
@@ -101,7 +104,11 @@ def run_first_downloader():
         threads[i].start()
     for i, thread in threads.iteritems():
         thread.join()
-
+    # Temporary save the data in text file
+    if NEW_STOCKS:
+        pickle.dump(dict_of_temp_stocks, open('temp.p', 'wb'))
+    else:
+        dict_of_temp_stocks = pickle.load(open('temp.p', 'rb'))
     # Save the data into the db
     for save_symbol in symbols:
         save_data(save_symbol)
